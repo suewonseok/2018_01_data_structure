@@ -411,83 +411,6 @@ public:
 	void SetRecordFromKB();
 
 	/**
-	*	@brief	특정 conference의 sessionType list에 record를 add한다
-	*	@pre	없음
-	*	@post	session을 임시 객체로 만들어 값을 채우고 list안에 추가한다.
-	*/
-	void AccessAdd();
-
-	/**
-	*	@brief	특정 conference의 sessionType list에서 record를 delete한다
-	*	@pre	없음
-	*	@post	session을 임시 객체로 만들어 값을 비교하고 삭제한다.
-	*/
-	void AccessDelete();
-
-	/**
-	*	@brief	특정 conference의 sessionType list에서 record를 replace한다
-	*	@pre	없음
-	*	@post	session을 임시 객체로 만들어 값을 비교하고 수정한다.
-	*/
-	void AccessReplace();
-
-	/**
-	*	@brief	특정 conference의 sessionType list에서 모든 record를 출력한다.
-	*	@pre	없음
-	*	@post	모든 record를 display한다.
-	*/
-	void AccessDisplay();
-
-	/**
-	*	@brief	list안에 있는 객체들이 data가 가진 name을 포함하는지 검사하고 포함하는 객체들을 전부 출력한다. 
-	*	@pre	없음
-	*	@post	조건에 만족하는 record를 display한다.
-	*/
-	void SearchByName(SessionType data);
-
-	/**
-	*	@brief	list안에 있는 객체들이 data가 가진 name을 포함하는지 검사하고 포함하는 객체들을 전부 출력한다.
-	*	@pre	없음
-	*	@post	조건에 만족하는 record를 display한다.
-	*/
-	void AccessRetrieveByName();
-
-	/**
-	*	@brief	특정 session의 paperType list에 record를 add한다
-	*	@pre	없음
-	*	@post	paper을 임시 객체로 만들어 값을 채우고 list안에 추가한다.
-	*/
-	void AccessAddPaper();
-
-	/**
-	*	@brief	특정 session의 paperType list에서 record를 delete한다
-	*	@pre	없음
-	*	@post	paper을 임시 객체로 만들어 값을 비교하고 삭제한다.
-	*/
-	void AccessDeletePaper();
-
-	/**
-	*	@brief	특정 session의 paperType list에서 record를 replace한다
-	*	@pre	없음
-	*	@post	paper을 임시 객체로 만들어 값을 비교하고 수정한다.
-	*/
-	void AccessReplacePaper();
-
-	/**
-	*	@brief	list안에 있는 객체들이 특정 name을 포함하는지 검사하고 포함하는 객체들을 전부 출력한다.
-	*	@pre	없음
-	*	@post	조건에 만족하는 record를 display한다.
-	*/
-	void AccessRetrieveByNamePaper();
-
-	/**
-	*	@brief	특정 session의 paperType list에서 모든 record를 출력한다.
-	*	@pre	없음
-	*	@post	모든 record를 display한다.
-	*/
-	void AccessDisplayPaper();
-
-	/**
 	*	두 개의 conferenceType을 비교한다.
 	*	@brief	record의 Name를 토대로 두 개의 conferenceType을 비교한다.
 	*	@pre	두 개의 conferenceType이 초기화된 상태여야한다.
@@ -498,6 +421,14 @@ public:
 	*			그렇지 않으면 EQUAL를 반환.
 	*/
 	RelationType CompareByName(const ConferenceType &data);
+
+	/**
+	*	@brief	학술대회가 가진 sessionList를 반환한다.
+	*	@pre	없음
+	*	@post	학술대회가 가진 sessionList를 반환한다.
+	*	@return	학술대회가 가진 sessionList
+	*/
+	ArrayList<SessionType>* GetSessionList();
 };
 
 #endif	// _CONFERENCETYPE_H

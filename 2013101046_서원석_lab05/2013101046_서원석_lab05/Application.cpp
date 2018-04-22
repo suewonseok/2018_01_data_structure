@@ -22,6 +22,7 @@ void Application::Run()
 	}
 }
 
+// 사용자의 권한에 맞는 명령을 수행해준다.(유저입장)
 void Application::userInterface()
 {
 	while (1)
@@ -36,13 +37,13 @@ void Application::userInterface()
 			RetrieveByName();
 			break;
 		case 3: // 논문 전체 출력
-			//DisplayAllPaper(); 진짜 전체 출력으로 바꾸기
+			DisplayAllPaper();
 			break;
 		case 4: // 논문 제목으로 검색
-			// RetrieveByNamePaper();
+			RetrievePaperByName();
 			break;
 		case 5: // 논문 저자로 검색
-			// RetrieveByAuthorPaper();
+			RetrievePaperByAuthor();
 			break;
 		case 6: // 뒤로 가기
 			return;
@@ -51,6 +52,8 @@ void Application::userInterface()
 		}
 	}
 }
+
+// 사용자의 권한에 맞는 명령을 실행해준다.(관리자 권한 => conference 관리)
 void Application::manageConference()
 {
 	while (1)
@@ -68,27 +71,16 @@ void Application::manageConference()
 		case 3:	// 학술대회를 리스트에서 갱신
 			ReplaceConference();
 			break;
-		/*
-		case 4:	// 학술대회에서 이름에 키워드가 포함된 모든 학술대회 출력
-				// 모든 정보 출력
-			RetrieveByName(); // name을 primary key로 사용
-			break;
-		case 5: // 모든 학술대회의 논문 중에서 키워드가 포함된 논문 출력
-				// 논문 제목, 저자, 페이지 수 출력
-			RetrievePaperByName(); // name을 primary key로 사용
-		case 6:	// 학술대회 약자를 화면에 출력하고, 특정 학술대회 번호를 입력
-				// 입력된 학술대회의 모든 정보 출력
-			GetConferenceInfo();
-			break;
-		*/
 		case 4:	// 모든 학술대회의 이름 화면 출력
 			DisplayAllConference();
 			break;
 		case 5: // 세션을 다루는 함수로 이동
 			manageSession();
 			break;
-		case 0: // 뒤로 가기
+		case 6: // 뒤로 가기
 			return;
+		case 0: // 프로그램 종료
+			exit(100);
 		default:
 			cout << "\tIllegal selection...\n";
 			break;
@@ -96,12 +88,29 @@ void Application::manageConference()
 	}
 }
 
+// 사용자의 권한에 맞는 명령을 실행해준다.(관리자 권한 => session 관리)
 void Application::manageSession()
 {
+	ArrayList<SessionType> * sessionList;
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tConference instance is not exist.\n";
 		return;
+	}
+	else
+	{
+		ConferenceType dummy;
+		cout << "\n\t===Current conference list===" << endl;
+		FoundConferenceRecord(dummy);
+		Iterator<ConferenceType> iter(m_List);
+		while (iter.NotNull())
+		{
+			if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
+				break;
+			iter.Next();
+		}
+		sessionList = iter.GetCurrentNode()->data.GetSessionList();
 	}
 	while (1)
 	{
@@ -109,24 +118,19 @@ void Application::manageSession()
 		switch (m_Command)
 		{
 		case 1: // 세션 추가
-			AddSession();
+			AddSession(sessionList);
 			break;
 		case 2: // 세션 삭제
-			DeleteSession();
+			DeleteSession(sessionList);
 			break;
 		case 3: // 세션 갱신
-			ReplaceSession();
+			ReplaceSession(sessionList);
 			break;
-		/*
-		case 4: // 세션 검색
-			s_RetriveByName();
-			break;
-		*/
 		case 4: // 세션 전체 출력
-			DisplaySession();
+			DisplayAllSession(sessionList);
 			break;
 		case 5: // 논문 관리
-			managePaper();
+			managePaper(sessionList);
 			break;
 		case 6: // 뒤로가기
 			return;
@@ -138,29 +142,46 @@ void Application::manageSession()
 	}
 }
 
-void Application::managePaper()
+// 사용자의 권한에 맞는 명령을 실행해준다.(관리자 권한 => paper 관리)
+void Application::managePaper(ArrayList<SessionType>* sessionList)
 {
+	ArrayList<PaperType> * paperList;
+	if (sessionList->IsEmpty())
+	{
+		cout << "\n\t===Current session list===" << endl;
+		cout << "\tSession instance is not exist.\n";
+		return;
+	}
+	else
+	{
+		SessionType dummy;
+		cout << "\n\t===Current session list===" << endl;
+		FoundSessionRecord(sessionList, dummy);
+		Iterator<SessionType> iter(*sessionList);
+		while (iter.NotNull())
+		{
+			if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
+				break;
+			iter.Next();
+		}
+		paperList = iter.GetCurrentNode()->data.GetPaperList();
+	}
 	while (1)
 	{
 		m_Command = GetCommandAboutPaper();
 		switch (m_Command)
 		{
 		case 1: // 논문 추가
-			AddPaper();
+			AddPaper(paperList);
 			break;
 		case 2: // 논문 삭제
-			DeletePaper();
+			DeletePaper(paperList);
 			break;
 		case 3: // 논문 갱신
-			ReplacePaper();
+			ReplacePaper(paperList);
 			break;
-		/*
-		case 4: // 논문 검색
-			p_RetriveByName();
-			break;
-		*/
 		case 4: //논문 전체 출력
-			DisplayPaper();
+			DisplayAllPaper(paperList);
 			break;
 		case 5: // 뒤로가기
 			return;
@@ -188,6 +209,7 @@ int Application::GetCommand()
 	return command;
 }
 
+// 화면에 명령 번호를 보여주고 키보드로 입력 값을 받는다.
 int Application::GetCommandAboutUser()
 {
 	int command;
@@ -206,6 +228,7 @@ int Application::GetCommandAboutUser()
 	return command;
 }
 
+// 화면에 명령 번호를 보여주고 키보드로 입력 값을 받는다.
 int Application::GetCommandAboutConference()
 {
 	int command;
@@ -214,14 +237,10 @@ int Application::GetCommandAboutConference()
 	cout << "\t   1 : Add conference" << endl;
 	cout << "\t   2 : Delete conference" << endl;
 	cout << "\t   3 : Replace conference" << endl;
-	/*
-	cout << "\t   4 : Print retrieve conference on screen" << endl;
-	cout << "\t   5 : Print retrieve paper on screen" << endl;
-	cout << "\t   6 : Print abbreviation conference on screen" << endl;
-	*/
 	cout << "\t   4 : Print all conference name on screen" << endl;
 	cout << "\t   5 : Manage session" << endl;
-	cout << "\t   0 : Back" << endl;
+	cout << "\t   6 : Back" << endl;
+	cout << "\t   0 : Quit" << endl;
 
 	cout << endl << "\t Choose a Command--> ";
 	cin >> command;
@@ -230,6 +249,7 @@ int Application::GetCommandAboutConference()
 	return command;
 }
 
+// 화면에 명령 번호를 보여주고 키보드로 입력 값을 받는다.
 int Application::GetCommandAboutSession()
 {
 	int command;
@@ -238,7 +258,6 @@ int Application::GetCommandAboutSession()
 	cout << "\t   1 : Add Session" << endl;
 	cout << "\t   2 : Delete Session" << endl;
 	cout << "\t   3 : Replace Session" << endl;
-	//cout << "\t   4 : Print retrieve session on screen" << endl;
 	cout << "\t   4 : Display All sessions in conference you select" << endl;
 	cout << "\t   5 : Manage paper" << endl;
 	cout << "\t   6 : Back" << endl;
@@ -251,6 +270,7 @@ int Application::GetCommandAboutSession()
 	return command;
 }
 
+// 화면에 명령 번호를 보여주고 키보드로 입력 값을 받는다.
 int Application::GetCommandAboutPaper()
 {
 	int command;
@@ -259,7 +279,6 @@ int Application::GetCommandAboutPaper()
 	cout << "\t   1 : Add Paper" << endl;
 	cout << "\t   2 : Delete Paper" << endl;
 	cout << "\t   3 : Replace Paper" << endl;
-	//cout << "\t   4 : Print retrieve paper on screen" << endl;
 	cout << "\t   4 : Display all Paper in session you select" << endl;
 	cout << "\t   5 : Back" << endl;
 	cout << "\t   0 : Quit" << endl;
@@ -291,38 +310,29 @@ int Application::AddConference()
 }
 
 // list안에 새로운 session을 추가한다.
-int Application::AddSession()
+int Application::AddSession(ArrayList<SessionType>* sessionList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	SessionType session;
 	
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
-	}
-	iter.GetCurrentNode()->data.AccessAdd();
+	session.SetRecordFromKB();
+	sessionList->Add(session);
+	DisplayAllSession(sessionList);
 	return 1;
 }
 
-int Application::AddPaper()
+// list안에 새로운 paper를 추가한다.
+void Application::AddPaper(ArrayList<PaperType>* paperList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
-	}
-	iter.GetCurrentNode()->data.AccessAddPaper();
-	return 1;
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	PaperType paper;
+	cout << endl;
+	paper.SetRecordFromKB();
+	paperList->Add(paper);
+	m_paperList.Add(paper);
+	// 현재 list 출력
+	DisplayAllPaper(paperList);
+	return;
 }
 
 //입력받은 name값을 통해 list안의 특정 record를 delete한다.
@@ -331,6 +341,7 @@ int Application::DeleteConference()
 	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 		return 0;
 	}
@@ -348,38 +359,47 @@ int Application::DeleteConference()
 	return 1;
 }
 
-int Application::DeleteSession()
+//입력받은 name값을 통해 list안의 특정 record를 delete한다.
+void Application::DeleteSession(ArrayList<SessionType>* sessionList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	if (sessionList->IsEmpty())
 	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
+		cout << "\n\t===Current session list===" << endl;
+		cout << "\tSessionType list is empty" << endl;
+		return;
 	}
-	iter.GetCurrentNode()->data.AccessDelete();
-	return 1;
+
+	SessionType session;
+	cout << endl;
+	session.SetNameFromKB();
+	sessionList->Get(session);
+	sessionList->Delete(session);
+	DisplayAllSession(sessionList);
 }
 
-int Application::DeletePaper()
+//입력받은 name값을 통해 list안의 특정 record를 delete한다.
+void Application::DeletePaper(ArrayList<PaperType>* paperList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
 
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	if (paperList->IsEmpty())
 	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tpaperType list is empty" << endl;
+		return;
 	}
-	iter.GetCurrentNode()->data.AccessDeletePaper();
-	return 1;
+
+	PaperType paper;
+	cout << endl;
+	paper.SetNameFromKB();
+	paperList->Get(paper);
+	paperList->Delete(paper);
+
+	// 현재 list 출력
+	DisplayAllPaper(paperList);
+
+	return;
 }
 
 // 입력받은 name값을 통해 list안의 특정 record를 replace한다.
@@ -388,6 +408,7 @@ int Application::ReplaceConference()
 	// 입력받은 name을 통해 리스트에서 record replace, 리스트가 empty일 경우는 replace하지 않고 0을 리턴
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 		return 0;
 	}
@@ -406,38 +427,51 @@ int Application::ReplaceConference()
 }
 
 // list안에 session을 갱신한다.
-int Application::ReplaceSession()
+void Application::ReplaceSession(ArrayList<SessionType>* sessionList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
 
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	if (sessionList->IsEmpty())
 	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
+		cout << "\n\t===Current session list===" << endl;
+		cout << "\tSessionType list is empty" << endl;
+		return;
 	}
-	iter.GetCurrentNode()->data.AccessReplace();
-	return 1;
+
+	cout << endl;
+	SessionType session;
+	session.SetRecordFromKB();
+	sessionList->Get(session);
+	sessionList->Replace(session);
+	DisplayAllSession(sessionList);
+
+
+
+	return;
 }
 
-int Application::ReplacePaper()
+// 입력받은 name값을 통해 list안의 특정 record를 replace한다.
+void Application::ReplacePaper(ArrayList<PaperType>* paperList)
 {
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
 
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
+	//입력받은 name을 통해 리스트에서 record delete, 리스트가 empty일 경우는 delete하지 않고 0을 리턴
+	if (paperList->IsEmpty())
 	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tpaperType list is empty" << endl;
+		return;
 	}
-	iter.GetCurrentNode()->data.AccessReplacePaper();
-	return 1;
+
+	PaperType paper;
+	cout << endl;
+	paper.SetRecordFromKB();
+	paperList->Get(paper);
+	paperList->Replace(paper);
+
+	// 현재 list 출력
+	DisplayAllPaper(paperList);
+
+	return;
 }
 
 // 입력받은 Name값을 통해 list에서 특정 record를 찾아내 화면에 정보를 출력한다.
@@ -446,6 +480,7 @@ int Application::DisplayConference()
 	// 입력받은 Name을 통해 리스트에서 record 찾은 후 출력, 리스트가 empty일 경우는 출력하지 않고 0을 리턴
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 		return 0;
 	}
@@ -460,45 +495,13 @@ int Application::DisplayConference()
 	return 1;
 }
 
-void Application::DisplaySession()
-{
-		ConferenceType dummy;
-		cout << "\n\t===Current conference list===" << endl;
-		m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-		Iterator<ConferenceType> iter(m_List);
-		while (iter.NotNull())
-		{
-			if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-				break;
-			iter.Next();
-		}
-		iter.GetCurrentNode()->data.AccessDisplay();
-		return;
-}
-
-void Application::DisplayPaper()
-{
-	ConferenceType dummy;
-	cout << "\n\t===Current conference list===" << endl;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
-	}
-	iter.GetCurrentNode()->data.AccessDisplayPaper();
-	return;
-}
 
 // 화면에 리스트 안의 모든 records를 출력한다.
 void Application::DisplayAllConference()
 {
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 		return;
 	}
@@ -518,58 +521,155 @@ void Application::DisplayAllConference()
 	}
 }
 
+// 화면에 리스트 안의 모든 records를 출력한다.
+void Application::DisplayAllSession(ArrayList<SessionType>* sessionList)
+{
+	if (sessionList->IsEmpty())
+	{
+		cout << "\n\t===Current session list===" << endl;
+		cout << "\tList is empty" << endl;
+		return;
+	}
+	else
+	{
+		SessionType session;
+		cout << "\n\t===Current session list===" << endl;
+		Iterator<SessionType> iter(*sessionList);
+
+		// list의 모든 데이터를 화면에 출력
+		while (iter.NotNull()) {
+			iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+			cout << endl;
+			iter.Next();
+		}
+		return;
+	}
+}
+
+// 화면에 리스트 안의 모든 records를 출력한다.
+void Application::DisplayAllPaper(ArrayList<PaperType>* paperList)
+{
+	if (paperList->IsEmpty())
+	{
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tList is empty" << endl;
+		return;
+	}
+	else
+	{
+		PaperType paper;
+		cout << "\n\t===Current paper list===" << endl;
+		Iterator<PaperType> iter(*paperList);
+
+		// list의 모든 데이터를 화면에 출력
+		while (iter.NotNull()) {
+			iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+			cout << endl;
+			iter.Next();
+		}
+		return;
+	}
+}
+
+// 화면에 리스트 안의 모든 records를 출력한다.
+void Application::DisplayAllPaper()
+{
+	if (m_paperList.IsEmpty())
+	{
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tList is empty" << endl;
+		return;
+	}
+	else
+	{
+		cout << "\n\t===Current paper list===" << endl;
+		Iterator<PaperType> iter(m_paperList);
+		while (iter.NotNull()) {
+			iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+			cout << endl;
+			iter.Next();
+		}
+		return;
+	}
+}
 
 // 학술대회를 학술대회 이름으로 검색하여 화면 출력
-// 모든 정보 출력
 void Application::RetrieveByName()
 {
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 		return ;
 	}
 	ConferenceType conference;
-	cout << "Enter a name for search: ";
 
 	conference.SetNameFromKB();
 	SearchByName(conference);
 	return;
 }
 
-void Application::s_RetriveByName()
-{
-	ConferenceType dummy;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
-	}
-	iter.GetCurrentNode()->data.AccessRetrieveByName();
-}
-
-void Application::p_RetriveByName()
-{
-	ConferenceType dummy;
-	m_List.GetCurPointerFromKB(dummy); //m_pCurPointer를 통해 사용자가 원하는 ConferenceType 객체가 들어있는 NodeType 객체를 가리키게한다.
-
-	Iterator<ConferenceType> iter(m_List);
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.CompareByName(dummy) == EQUAL)
-			break;
-		iter.Next();
-	}
-	iter.GetCurrentNode()->data.AccessRetrieveByNamePaper();
-}
-
-// 학술대회를 학술대회 이름으로 검색하여 화면 출력
-// 모든 정보 출력
+// 논문을 논문의 이름으로 검색하여 화면 출력
 int Application::RetrievePaperByName()
 {
+	if (m_paperList.IsEmpty())
+	{
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tList is empty" << endl;
+		return 0;
+	}
+	else
+	{
+		PaperType paper;
+		paper.SetNameFromKB();
+		Iterator<PaperType> iter(m_paperList);
+		int cnt = 0;
+		cout << "\n\t===Print retrieve by paper name on screen===" << endl;
+		while (iter.NotNull())
+		{
+			if (iter.GetCurrentNode()->data.GetName().find(paper.GetName()) < 1024)
+			{
+				cout << "\n";
+				iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+				cnt++;
+			}
+			iter.Next();
+		}
+		if(cnt == 0)
+			cout << "\tpaper is not exist associated with input paper name." << endl;
+	}
+	return 1;
+}
+
+// 논문을 논문의 저자 이름으로 검색하여 화면 출력
+int Application::RetrievePaperByAuthor()
+{
+	if (m_paperList.IsEmpty())
+	{
+		cout << "\n\t===Current paper list===" << endl;
+		cout << "\tList is empty" << endl;
+		return 0;
+	}
+	else
+	{
+		PaperType paper;
+		paper.SetAuthorFromKB();
+		Iterator<PaperType> iter(m_paperList);
+		int cnt = 0;
+		cout << "\n\t===Print retrieve by paper author on screen===" << endl;
+		while (iter.NotNull())
+		{
+			if (iter.GetCurrentNode()->data.GetAuthor().find(paper.GetAuthor()) < 1024)
+			{
+				cout << "\n";
+				iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+				cnt++;
+			}
+			iter.Next();
+		}
+		if (cnt == 0)
+			cout << "\tpaper is not exist associated with input paper author." << endl;
+	}
 	return 1;
 }
 
@@ -578,6 +678,7 @@ int Application::RetrievePaperByName()
 void Application::SearchByName(ConferenceType& data)
 {
 	Iterator<ConferenceType> iter(m_List);
+	cout << "\n\t===Print retrieve by conference name on screen===" << endl;
 	while (iter.NotNull())
 	{
 		if (iter.GetCurrentNode()->data.GetName().find(data.GetName()) < 1024)
@@ -595,13 +696,88 @@ void Application::GetConferenceInfo()
 {
 	if (m_List.IsEmpty())
 	{
+		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tList is empty" << endl;
 	}
 	else
 	{
 		ConferenceType conference;
-		m_List.GetCurPointerFromKB(conference);
+		cout << "\n\t===Current conference list===" << endl;
+		FoundConferenceRecord(conference);
+		cout << "\n\t===conference record you choice===" << endl;
 		conference.DisplayRecordOnScreen();
+	}
+	return;
+}
+
+// 사용자가 원하는 record를 찾기 위해 list안의 record를 나열하고 선택을 요구한다.
+// 선택된 record의 값이 인자로 넣은 임시 record에 복사된다.
+void Application::FoundConferenceRecord(ConferenceType& inData)
+{
+	Iterator<ConferenceType> iter(m_List);
+	Iterator<ConferenceType> iter2(m_List);
+	int cnt = 1;
+	while (iter.NotNull())
+	{
+		cout << "\t" << cnt++ << ": " << iter.GetCurrentNode()->data.GetId() << endl;
+		iter.Next();
+	}
+
+	int input;
+	cout << "\tselect number: ";
+	cin >> input;
+	if (input > m_List.GetLength() || input < 1)
+	{
+		while (input > m_List.GetLength() || input < 1)
+		{
+			cout << "\tPlease input again:";
+			cin >> input;
+		}
+	}
+
+	else
+	{
+		for (int i = 0; i < input; i++)
+		{
+			inData = iter2.GetCurrentNode()->data;
+			iter2.Next();
+		}
+	}
+	return;
+}
+
+// 사용자가 원하는 record를 찾기 위해 list안의 record를 나열하고 선택을 요구한다.
+// 선택된 record의 값이 인자로 넣은 임시 record에 복사된다.
+void Application::FoundSessionRecord(ArrayList<SessionType>* sessionList, SessionType& inData)
+{
+	Iterator<SessionType> iter(*sessionList);
+	Iterator<SessionType> iter2(*sessionList);
+	int cnt = 1;
+	while (iter.NotNull())
+	{
+		cout << "\t" << cnt++ << ": " << iter.GetCurrentNode()->data.GetId() << endl;
+		iter.Next();
+	}
+
+	int input;
+	cout << "\tselect number: ";
+	cin >> input;
+	if (input > sessionList->GetLength() || input < 1)
+	{
+		while (input > sessionList->GetLength() || input < 1)
+		{
+			cout << "\tPlease input again:";
+			cin >> input;
+		}
+	}
+
+	else
+	{
+		for (int i = 0; i < input; i++)
+		{
+			inData = iter2.GetCurrentNode()->data;
+			iter2.Next();
+		}
 	}
 	return;
 }

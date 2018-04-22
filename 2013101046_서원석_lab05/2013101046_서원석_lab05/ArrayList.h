@@ -95,29 +95,6 @@ public:
 	*/
 	int Get(RecordType item);
 
-	/**
-	*	@brief	리스트 반복자를 초기화한다.
-	*	@pre	리스트가 초기화된 상태여야한다.
-	*	@post	반복자가 리셋된다.
-	*/
-	void ResetList();
-
-	/**
-	*	@brief	list 반복자를 다음 record를 향하도록 이동시키고 반복자에 해당하는 record를 얻는다.
-	*	@pre	list와 list 반복자가 초기화 상태가 아니어야한다.
-	*	@post	반복자가 다음 record를 향하도록 이동한다.
-	*	@param	data	현재 record의 반복자를 얻는다. 초기화 될 필요가 없다.
-	*	@return	리스트의 마지막을 가리키는 것이 아니라면 현재 반복자가 가리키는 record를 반환한다. 그렇지 않다면 -1을 반환한다.
-	*/
-	void GetNextItem(RecordType& data);
-
-	/**
-	*	@brief	해당 리스트에서 유저가 객체 하나를 고르게 하고 고른 객체와 같은 값을 갖도록 입력한 인자의 값을 변경한다.
-	*	@pre	list와 list 반복자가 초기화 상태가 아니어야한다.
-	*	@post	입력으로 받은 객체에 사용자가 원하는 객체의 정보가 복사된다.
-	*	@param	data	임시로 만든 객체, 사용자가 원하는 데이터가 복사 될 것이다.
-	*/
-	void GetCurPointerFromKB(RecordType& inData);
 
 	/**
 	*	@brief	list안의 record중에 사용자가 입력한 name와 동일한 name값을 갖는 record를 찾아서 delete한다.
@@ -277,44 +254,6 @@ void ArrayList<RecordType>::Replace(RecordType data) {
 	pNode->data = data;
 }
 
-
-
-// 사용자의 입력으로 부터 해당하는 RecordType 객체의 정보를 얻어온다.
-template<class RecordType>
-void ArrayList<RecordType>::GetCurPointerFromKB(RecordType& inData)
-{
-
-	Iterator<RecordType> iter(*this);
-	Iterator<RecordType> iter2(*this);
-	int cnt = 1;
-	while (iter.NotNull())
-	{
-		cout << "\t" << cnt++ << ": " << iter.GetCurrentNode()->data.GetId() << endl;
-		iter.Next();
-	}
-
-	int input;
-	cout << "\tselect number: ";
-	cin >> input;
-	if (input > this->GetLength() || input < 1)
-	{
-		while (input > this->GetLength() || input < 1)
-		{
-			cout << "\tPlease input again:";
-			cin >> input;
-		}
-	}
-
-	else
-	{
-		for (int i = 0; i < input; i++)
-		{
-			inData = iter2.GetCurrentNode()->data;
-			iter2.Next();
-		}
-	}
-	return;
-}
 
 //객체를 인자로 넣어 동일한 name을 가진 객체를 찾고 인자로 넣은 객체에 그 값을 넣는다.
 template <typename RecordType>
