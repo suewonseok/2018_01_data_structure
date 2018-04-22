@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['s_5fretrivebyname',['s_RetriveByName',['../class_application.html#a7abc0362b5b5061f46489544bbcd9540',1,'Application']]],
+  ['searchbyname',['SearchByName',['../class_application.html#a80dd473f99fa12e6ecdf38afc311066a',1,'Application::SearchByName()'],['../class_conference_type.html#a5ba0c8123a3575f061e118591824e845',1,'ConferenceType::SearchByName()'],['../class_session_type.html#ac5d4296fd03f58479a23f988cbac9b50',1,'SessionType::SearchByName()']]],
+  ['sessiontype',['SessionType',['../class_session_type.html#ab46ee2b2cf2bc9525b7c0589c8afa3af',1,'SessionType']]],
+  ['setabb',['SetAbb',['../class_conference_type.html#a11fea9661cd931c11da52d30330160d7',1,'ConferenceType']]],
+  ['setabbfromkb',['SetAbbFromKB',['../class_conference_type.html#a88f34fe8d8cab11949b390e2226954c2',1,'ConferenceType']]],
+  ['setauthor',['SetAuthor',['../class_paper_type.html#adedf40900bfe67cd79251555cbdcb647',1,'PaperType']]],
+  ['setauthorfromkb',['SetAuthorFromKB',['../class_paper_type.html#af4f60411e40a6f17c8ac3e9646d65bf8',1,'PaperType']]],
+  ['setholdtime',['SetHoldTime',['../class_conference_type.html#a7348c254c24d1eca136c7e4fc9d48e6d',1,'ConferenceType']]],
+  ['setholdtimefromkb',['SetHoldTimeFromKB',['../class_conference_type.html#a6e60360ebdb8ea678a20db1fa49a131c',1,'ConferenceType']]],
+  ['setholdwhere',['SetHoldWhere',['../class_conference_type.html#a77a1307ce6ac6978ed1f729f04d82b94',1,'ConferenceType']]],
+  ['setholdwherefromkb',['SetHoldWhereFromKB',['../class_conference_type.html#a84d12fb8352412b840dd6d27bd29d7a2',1,'ConferenceType']]],
+  ['sethost',['SetHost',['../class_conference_type.html#a9fc3b33781aea8ecb8d821af6fcb8652',1,'ConferenceType']]],
+  ['sethostfromkb',['SetHostFromKB',['../class_conference_type.html#acb0e8c138a3113c55d29db39cc003acf',1,'ConferenceType']]],
+  ['setisbn',['SetISBN',['../class_conference_type.html#a87468a13be6c562bb94672d530cb4f17',1,'ConferenceType']]],
+  ['setisbnfromkb',['SetISBNFromKB',['../class_conference_type.html#a3d5509b5becb25b2033289f99b12b249',1,'ConferenceType']]],
+  ['setname',['SetName',['../class_conference_type.html#ae19edc3a58d67d638688fed0e0497e06',1,'ConferenceType::SetName()'],['../class_paper_type.html#a34847065662d175960d348c2ba8ffa5d',1,'PaperType::SetName()'],['../class_session_type.html#a91cac03be00078a00a257f8b5b7a512c',1,'SessionType::SetName()']]],
+  ['setnamefromkb',['SetNameFromKB',['../class_conference_type.html#adc7af621b8086625d37c3fb52bb7a097',1,'ConferenceType::SetNameFromKB()'],['../class_paper_type.html#ab1ce31c76a1538346fe7d6ca17ab52a2',1,'PaperType::SetNameFromKB()'],['../class_session_type.html#ac3158f139ae2213c295d3dd82400f1cf',1,'SessionType::SetNameFromKB()']]],
+  ['setpage',['SetPage',['../class_paper_type.html#afc9489c252591deea68c29cb603646f1',1,'PaperType']]],
+  ['setpagefromkb',['SetPageFromKB',['../class_paper_type.html#a2d437811a47a0b5b266134cdc8734814',1,'PaperType']]],
+  ['setrecord',['SetRecord',['../class_conference_type.html#a957e3b6c83b9f2994a3eb804cc7c3dad',1,'ConferenceType::SetRecord()'],['../class_paper_type.html#a0104ca51dea1a8af76d1578b957a80fe',1,'PaperType::SetRecord()']]],
+  ['setrecordfromkb',['SetRecordFromKB',['../class_conference_type.html#a7ee049df3516de86283737f1daddfdbb',1,'ConferenceType::SetRecordFromKB()'],['../class_paper_type.html#aa974d7fd394abab379959248a00121ae',1,'PaperType::SetRecordFromKB()'],['../class_session_type.html#af2708f49f15196128f2f081ee67e534f',1,'SessionType::SetRecordFromKB()']]],
+  ['setreturndate',['SetReturnDate',['../class_conference_type.html#a6d5df98e79f646bf550f362748985ce4',1,'ConferenceType']]],
+  ['setreturndatefromkb',['SetReturnDateFromKB',['../class_conference_type.html#a7444fc2f9766d128a6a64b5c9cbdd6cf',1,'ConferenceType']]],
+  ['setstartdate',['SetStartDate',['../class_conference_type.html#a08dbfbe9e15441341cd3af5598b83d2f',1,'ConferenceType']]],
+  ['setstartdatefromkb',['SetStartDateFromKB',['../class_conference_type.html#a870a70f15be5b1c7cde1bb8215ca3dc8',1,'ConferenceType']]]
+];
