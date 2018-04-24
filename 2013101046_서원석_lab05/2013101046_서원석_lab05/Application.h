@@ -223,14 +223,6 @@ public:
 	int DisplayConference();
 
 	/**
-	*	@brief	name으로 검색 ( 해당 키워드가 포함된 모든 객체의 정보 출력 )
-	*	@pre	없다
-	*	@post	name으로 검색 ( 해당 키워드가 포함된 모든 객체의 정보 출력 )
-	*	@param	검색하려는 키워드를 멤버변수로 갖고있는 객체
-	*/
-	void SearchByName(ConferenceType&);
-
-	/**
 	*	@brief	키보드로 name값을 받아서 해당 name이 포함된 모든 객체들을 출력한다
 	*	@pre	list가 비어있으면 안된다.
 	*	@post	키보드로 name값을 받아서 해당 name이 포함된 모든 객체들을 출력한다

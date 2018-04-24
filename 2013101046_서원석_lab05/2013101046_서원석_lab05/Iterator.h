@@ -34,6 +34,11 @@ public:
 	Iterator(const ArrayList<RecordType>& list) : m_List(list), m_pCurPointer(list.m_pFirst) {}
 
 	/**
+	*	소멸자
+	*/
+	~Iterator() {};
+
+	/**
 	*	@brief	현재 노드를 가리키는 포인터가 null인지 아닌지 판단하는 메서드.
 	*	@pre	Iterator가 초기화 되어있어야한다.
 	*	@post	None.

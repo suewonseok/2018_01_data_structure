@@ -166,54 +166,58 @@ bool ArrayList<RecordType>::IsEmpty()
 
 // list안에 새로운 data를 추가한다.
 template<class RecordType>
-int ArrayList<RecordType>::Add(RecordType inData)
+int ArrayList<RecordType>::Add(RecordType item)
 {
-		NodeType<RecordType>* node = new NodeType<RecordType>;
-		Iterator<RecordType> iter(*this);
+	
+	NodeType<RecordType>* node = new NodeType<RecordType>;
+	Iterator<RecordType> iter(*this);
 
-		node->data = inData;
-		node->prev = nullptr;
-		node->next = nullptr;
+	node->data = item;
+	node->prev = nullptr;
+	node->next = nullptr;
 
-		// 비어있는 경우
-		if (m_pFirst == nullptr) 
-		{
-			m_pFirst = node;
-			m_pLast = m_pFirst;
-		}
-		// 1개 이상
-		else {
-			NodeType<RecordType>* pNode;	// iterator에서 나오는 데이터 객체
-			while (iter.NotNull()) {
-				// GetCurrentNode는 return by value이므로 수정 및 실 메모리 접근 불가해서 사용 못함
-				pNode = iter.m_pCurPointer;
+	// 비어있는 경우
+	if (m_pFirst == nullptr) {
+		m_pFirst = node;
+		m_pLast = m_pFirst;
+	}
+	// 1개 이상
+	else {
+		NodeType<RecordType>* pNode;	// iterator에서 나오는 데이터 객체
+		while (iter.NotNull()) {
+			// GetCurrentNode는 return by value이므로 수정 및 실 메모리 접근 불가해서 사용 못함
+			pNode = iter.m_pCurPointer;
 
-				if (node->data.CompareByName(pNode->data) == LESS) { // 넣으려고 하는게 더 작음
-					node->next = pNode;
-					if (m_nLength == 1) {	// 맨 앞
-						m_pFirst = node;
-					}
-					else {	// 중간
-						node->prev = pNode->prev;
-						node->prev->next = node;
-					}
-					pNode->prev = node;
+			if (node->data.CompareByName(pNode->data) == LESS) { // 넣으려고 하는게 더 작음
+				node->next = pNode;
+				if (pNode->prev == nullptr) {	// 맨 앞
+					m_pFirst = node;
+				}
+				else {	// 중간
+					node->prev = pNode->prev;
+					node->prev->next = node;
+				}
+				pNode->prev = node;
+				break;
+			}
+			else if (node->data.CompareByName(pNode->data) == EQUAL) { // 넣으려고 한 값이랑 같음
+				cout << "\n\tEqua name is already exist in list.\n";
+				return 0;
+			}
+			else {
+				if (!iter.NextNotNull()) {	// 맨 뒤
+					pNode->next = node;
+					node->prev = pNode;
+					m_pLast = node;
 					break;
 				}
-				else {
-					if (!iter.NextNotNull()) {	// 맨 뒤
-						pNode->next = node;
-						node->prev = pNode;
-						m_pLast = node;
-						break;
-					}
-					else iter.Next();
-				}
+				else iter.Next();
 			}
 		}
+	}
 
-		m_nLength++;
-		return 1;
+	m_nLength++;
+	return 1;
 }
 
 // list에서 특정 record를 삭제한다.
@@ -270,9 +274,11 @@ int ArrayList<RecordType>::Get(RecordType item)
 			item = iter.GetCurrentNode()->data;
 			break;
 		}
-		else if (item.CompareByName(iter.GetCurrentNode()->data) == GREATER) {
-			break;
-		}
+		/*
+			else if (item.CompareByName(iter.GetCurrentNode()->data) == GREATER) {
+				break;
+			}
+		*/
 		else {
 			iter.Next();
 		}

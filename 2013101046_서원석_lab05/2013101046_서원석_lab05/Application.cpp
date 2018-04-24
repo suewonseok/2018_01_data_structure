@@ -93,6 +93,7 @@ void Application::manageSession()
 {
 	ArrayList<SessionType> * sessionList;
 	if (m_List.IsEmpty())
+
 	{
 		cout << "\n\t===Current conference list===" << endl;
 		cout << "\tConference instance is not exist.\n";
@@ -605,7 +606,18 @@ void Application::RetrieveByName()
 	ConferenceType conference;
 
 	conference.SetNameFromKB();
-	SearchByName(conference);
+
+	Iterator<ConferenceType> iter(m_List);
+	cout << "\n\t===Print retrieve by conference name on screen===" << endl;
+	while (iter.NotNull())
+	{
+		if (iter.GetCurrentNode()->data.GetName().find(conference.GetName()) < 1024)
+		{
+			cout << "\n";
+			iter.GetCurrentNode()->data.DisplayRecordOnScreen();
+		}
+		iter.Next();
+	}
 	return;
 }
 
@@ -673,24 +685,6 @@ int Application::RetrievePaperByAuthor()
 	return 1;
 }
 
-// data가 가진 Name을 통해 검색.
-// 리스트 내 객체에 있는 멤버변수에 검색 키워드가 포함한다면 해당하는 객체 정보를 모두 화면출력
-void Application::SearchByName(ConferenceType& data)
-{
-	Iterator<ConferenceType> iter(m_List);
-	cout << "\n\t===Print retrieve by conference name on screen===" << endl;
-	while (iter.NotNull())
-	{
-		if (iter.GetCurrentNode()->data.GetName().find(data.GetName()) < 1024)
-		{
-			cout << "\n";
-			iter.GetCurrentNode()->data.DisplayRecordOnScreen();
-		}
-		iter.Next();
-	}
-	return;
-}
-
 // 객체들의 약자이름을 화면에 출력하고 사용자의 입력에 따라 해당하는 객체의 상세 정보를 화면에 출력 
 void Application::GetConferenceInfo()
 {
@@ -719,7 +713,7 @@ void Application::FoundConferenceRecord(ConferenceType& inData)
 	int cnt = 1;
 	while (iter.NotNull())
 	{
-		cout << "\t" << cnt++ << ": " << iter.GetCurrentNode()->data.GetId() << endl;
+		cout << "\t" << cnt++ << ": " << iter.GetCurrentNode()->data.GetAbb() << endl;
 		iter.Next();
 	}
 

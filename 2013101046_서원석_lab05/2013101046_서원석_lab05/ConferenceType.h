@@ -97,7 +97,7 @@ public:
 	*	@post	없음
 	*	@return	학술대회 Abbreviation
 	*/
-	string GetId()
+	string GetAbb()
 	{
 		return m_abb;
 	}
